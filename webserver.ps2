@@ -1,0 +1,22 @@
+Configuration WebServers
+{
+
+$server = @("web-1.iis.test", "web-2.iis.test", "web-3.iis.test")
+
+node $server
+ 
+
+    {
+    WindowsFeature IIS
+        {
+            Ensure = "Present"
+            Name= "Web-Server"
+        }
+
+    WindowsFeature ASP
+        {
+            Ensure = "Present"
+            Name = "Web-Asp-Net45"
+        }
+}
+}
