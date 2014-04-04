@@ -1,16 +1,15 @@
 Configuration WebServers
 {
+ 
 
-$server = @("web-1.iis.test", "web-2.iis.test", "web-3.iis.test")
-
-node $server
+node ("web-1.iis.test", "web-2.iis.test", "web-3.iis.test")
  
 
     {
     WindowsFeature IIS
         {
             Ensure = "Present"
-            Name= "Web-Server"
+            Name= "Web-Sver"
         }
 
     WindowsFeature ASP
@@ -20,3 +19,7 @@ node $server
         }
 }
 }
+
+WebServers
+
+Start-DscConfiguration -path .\WebServers -Verbose -Wait
