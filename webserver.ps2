@@ -6,20 +6,95 @@ node ("web-1.iis.test", "web-2.iis.test", "web-3.iis.test")
  
 
     {
-    WindowsFeature IIS
+    WindowsFeature IIS # Installs IIS
         {
             Ensure = "Present"
-            Name= "Web-Sver"
+            Name= "Web-Server"
         }
 
-    WindowsFeature ASP
+    WindowsFeature IIS-mgmt # Installs IIS
+        {
+            Ensure = "Present"
+            Name= "Web-Mgmt-Service"
+        }
+    WindowsFeature ASP # Installs ASP 4.5
         {
             Ensure = "Present"
             Name = "Web-Asp-Net45"
         }
-}
+
+        Registry mgmt-active
+        {
+            Ensure = "Present"
+            Key =  "HKLM:\SOFTWARE\Microsoft\WebManagement\Server"
+            ValueName = "EnableRemoteManagement"
+            Hex = "1"
+        }
+
+        Service WMSVC #ensure service is automatic
+        {
+            Name = "WMSvc"
+            StartupType = "Automatic"
+            State = "Running"
+            
+
+        } 
+<#
+       Package [WebFarm] #Web farm installer for IIS cluster webfarm software
+{
+    Name = WebFarm2_x64
+    Path = \\fileserver\msi\WebFarm2_x64.msi
+    ProductId = C82C596F-D437-4FB6-98A4-EFC1C19C3A31
+    Ensure = Present
+    
 }
 
+   Package [WebDeploy] #WebDeploy installer for IIS cluster webfarm software
+{
+    Name = WebDeploy_2_10_amd64_en-US
+    Path = \\fileserver\msi\WebDeploy_2_10_amd64_en-US.msi
+    ProductId = 88453A48-740B-4F33-8BF0-E15489874D4C
+    Ensure = Present
+    
+}
+#>
+<#
+Package [WebPlatformInstaller] #Web Platform Installer for IIS cluster webfarm software
+{
+    Name = WebPlatformInstaller_3_10_amd64_en-US
+    Path = \\fileserver\msi\WebPlatformInstaller_3_10_amd64_en-US.msi
+    ProductId = 4919F254-0F6E-430D-8175-43EBD5C76E62
+    Ensure = Present
+    
+}
+
+GetScript = {
+$c = Get-Content "\\fileserver\configs\EnableSharedConfig.state"
+return @{ State = ($c) }
+}
+TestScript = {
+[System.Reflection.Assembly]::LoadFrom( "C:\windows\system32\inetsrv\Microsoft.Web.Administration.dll" )
+$serverManager =  New-Object Microsoft.Web.Administration.ServerManager
+$config = $serverManager.GetRedirectionConfiguration()
+$redirectionSection = $config.GetSection("configurationRedirection")
+$r = $redirectionSection.Attributes["enabled"].Value
+if ($r -eq "true"){return $true } else { return $false }
+}
+SetScript = {
+[System.Reflection.Assembly]::LoadFrom( "C:\windows\system32\inetsrv\Microsoft.Web.Administration.dll" )
+$serverManager =  New-Object Microsoft.Web.Administration.ServerManager
+$config = $serverManager.GetRedirectionConfiguration()
+$redirectionSection = $config.GetSection("configurationRedirection")
+$redirectionSection.Attributes["enabled"].Value = "true"
+$redirectionSection.Attributes["path"].Value = "E:\Config\IIS"
+$serverManager.CommitChanges()
+$d = Get-Date
+Add-Content "\\fileserver\configs\State\EnableSharedConfig.state" "@ $d"
+}
+#>
+
+}
+}
 WebServers
 
 Start-DscConfiguration -path .\WebServers -Verbose -Wait
