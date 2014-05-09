@@ -6,6 +6,7 @@ node ("web-1.iis.test", "web-2.iis.test", "web-3.iis.test")
  
 
     {
+    #installs IIS and ensures that the system is running
     WindowsFeature IIS # Installs IIS
         {
             Ensure = "Present"
@@ -23,6 +24,14 @@ node ("web-1.iis.test", "web-2.iis.test", "web-3.iis.test")
             Name = "Web-Asp-Net45"
         }
 
+        Service WMSVC #ensure service is automatic
+        {
+            Name = "WMSvc"
+            StartupType = "Automatic"
+                        
+
+        } 
+        #Registry key to enable managment over network
         Registry mgmt-active #enables remote managment of IIS from other computers
         {
             Ensure = "Present"
@@ -31,14 +40,7 @@ node ("web-1.iis.test", "web-2.iis.test", "web-3.iis.test")
             ValueData = "1"
         }
 
-        Service WMSVC #ensure service is automatic
-        {
-            Name = "WMSvc"
-            StartupType = "Automatic"
-                        
-
-        } 
-       
+       #registry keys for SNMP 
         Registry snmp-community
         {
             Ensure = "Present"
@@ -56,6 +58,7 @@ node ("web-1.iis.test", "web-2.iis.test", "web-3.iis.test")
 
         }
         
+      #Managment packages
         Package WebFarm #Web farm installer for IIS cluster webfarm software
         {
             Name ="Microsoft Web Farm Framework Version 2.2"
@@ -87,33 +90,39 @@ node ("web-1.iis.test", "web-2.iis.test", "web-3.iis.test")
         }
 
 <#
-GetScript = {
-$c = Get-Content "\\fileserver\configs\EnableSharedConfig.state"
-return @{ State = ($c) }
-}
-TestScript = {
-[System.Reflection.Assembly]::LoadFrom( "C:\windows\system32\inetsrv\Microsoft.Web.Administration.dll" )
-$serverManager =  New-Object Microsoft.Web.Administration.ServerManager
-$config = $serverManager.GetRedirectionConfiguration()
-$redirectionSection = $config.GetSection("configurationRedirection")
-$r = $redirectionSection.Attributes["enabled"].Value
-if ($r -eq "true"){return $true } else { return $false }
-}
-SetScript = {
-[System.Reflection.Assembly]::LoadFrom( "C:\windows\system32\inetsrv\Microsoft.Web.Administration.dll" )
-$serverManager =  New-Object Microsoft.Web.Administration.ServerManager
-$config = $serverManager.GetRedirectionConfiguration()
-$redirectionSection = $config.GetSection("configurationRedirection")
-$redirectionSection.Attributes["enabled"].Value = "true"
-$redirectionSection.Attributes["path"].Value = "E:\Config\IIS"
-$serverManager.CommitChanges()
-$d = Get-Date
-Add-Content "\\fileserver\configs\State\EnableSharedConfig.state" "@ $d"
-}
-#>
+        GetScript = 
+        {
+            $c = Get-Content "\\fileserver\configs\EnableSharedConfig.state"
+            return @{ State = ($c) }
+        }
 
+        TestScript = 
+        {
+            [System.Reflection.Assembly]::LoadFrom( "C:\windows\system32\inetsrv\Microsoft.Web.Administration.dll" )
+            $serverManager =  New-Object Microsoft.Web.Administration.ServerManager
+            $config = $serverManager.GetRedirectionConfiguration()
+            $redirectionSection = $config.GetSection("configurationRedirection")
+            $r = $redirectionSection.Attributes["enabled"].Value
+            if ($r -eq "true"){return $true } else { return $false }
+        }
+
+        SetScript = 
+        {
+            [System.Reflection.Assembly]::LoadFrom( "C:\windows\system32\inetsrv\Microsoft.Web.Administration.dll" )
+            $serverManager =  New-Object Microsoft.Web.Administration.ServerManager
+            $config = $serverManager.GetRedirectionConfiguration()
+            $redirectionSection = $config.GetSection("configurationRedirection")
+            $redirectionSection.Attributes["enabled"].Value = "true"
+            $redirectionSection.Attributes["path"].Value = "E:\Config\IIS"
+            $serverManager.CommitChanges()
+            $d = Get-Date
+            Add-Content "\\fileserver\configs\State\EnableSharedConfig.state" "@ $d"
+        }
+        #>
+
+    }
 }
-}
+
 WebServers
 
 Start-DscConfiguration -path .\WebServers -Verbose -Wai
