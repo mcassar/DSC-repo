@@ -23,7 +23,7 @@ node ("web-1.iis.test", "web-2.iis.test", "web-3.iis.test")
             Name = "Web-Asp-Net45"
         }
 
-        Registry mgmt-active
+        Registry mgmt-active #enables remote managment of IIS from other computers
         {
             Ensure = "Present"
             Key =  "HKLM:\SOFTWARE\Microsoft\WebManagement\Server"
@@ -35,39 +35,42 @@ node ("web-1.iis.test", "web-2.iis.test", "web-3.iis.test")
         {
             Name = "WMSvc"
             StartupType = "Automatic"
-            State = "Running"
-            
+                        
 
         } 
-<#
-       Package [WebFarm] #Web farm installer for IIS cluster webfarm software
+        
+  Package WebFarm #Web farm installer for IIS cluster webfarm software
 {
-    Name = WebFarm2_x64
-    Path = \\fileserver\msi\WebFarm2_x64.msi
-    ProductId = C82C596F-D437-4FB6-98A4-EFC1C19C3A31
-    Ensure = Present
+    Name ="Microsoft Web Farm Framework Version 2.2"
+    Path = "\\fileserver\msi\WebFarm2_x64.msi"
+    ProductId = "5134B35A-B559-4762-94A4-FD4918977953"
+    Ensure = "Present"
+    Arguments = "Quiet"
     
 }
 
-   Package [WebDeploy] #WebDeploy installer for IIS cluster webfarm software
+   Package WebDeploy #WebDeploy installer for IIS cluster webfarm software
 {
-    Name = WebDeploy_2_10_amd64_en-US
-    Path = \\fileserver\msi\WebDeploy_2_10_amd64_en-US.msi
-    ProductId = 88453A48-740B-4F33-8BF0-E15489874D4C
-    Ensure = Present
-    
-}
-#>
-<#
-Package [WebPlatformInstaller] #Web Platform Installer for IIS cluster webfarm software
-{
-    Name = WebPlatformInstaller_3_10_amd64_en-US
-    Path = \\fileserver\msi\WebPlatformInstaller_3_10_amd64_en-US.msi
-    ProductId = 4919F254-0F6E-430D-8175-43EBD5C76E62
-    Ensure = Present
+    Name ="Microsoft Web Deploy 2.0"
+    Path = "\\fileserver\msi\WebDeploy_2_10_amd64_en-US.msi"
+    ProductId = "5134B35A-B559-4762-94A4-FD4918977953"
+    Ensure = "Present"
+    Arguments = "Quiet"
     
 }
 
+
+Package WebPlatformInstaller #Web Platform Installer for IIS cluster webfarm software
+{
+    Name = "Microsoft Web Platform Installer 3.0"
+    Path = "\\fileserver\msi\WebPlatformInstaller_3_10_amd64_en-US.msi"
+    ProductId = "5134B35A-B559-4762-94A4-FD4918977953"
+    Ensure = "Present"
+    Arguments = "Quiet"   
+    
+}
+
+<#
 GetScript = {
 $c = Get-Content "\\fileserver\configs\EnableSharedConfig.state"
 return @{ State = ($c) }
