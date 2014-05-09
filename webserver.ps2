@@ -28,7 +28,7 @@ node ("web-1.iis.test", "web-2.iis.test", "web-3.iis.test")
             Ensure = "Present"
             Key =  "HKLM:\SOFTWARE\Microsoft\WebManagement\Server"
             ValueName = "EnableRemoteManagement"
-            Hex = "1"
+            ValueData = "1"
         }
 
         Service WMSVC #ensure service is automatic
@@ -38,37 +38,53 @@ node ("web-1.iis.test", "web-2.iis.test", "web-3.iis.test")
                         
 
         } 
+       
+        Registry snmp-community
+        {
+            Ensure = "Present"
+            Key = "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\SNMP\Parameters\Valid Communities"
+            ValueName = "nrpublic"
+            Hex = "4"
+        }
         
-  Package WebFarm #Web farm installer for IIS cluster webfarm software
-{
-    Name ="Microsoft Web Farm Framework Version 2.2"
-    Path = "\\fileserver\msi\WebFarm2_x64.msi"
-    ProductId = "5134B35A-B559-4762-94A4-FD4918977953"
-    Ensure = "Present"
-    Arguments = "Quiet"
-    
-}
+        Registry snmp-trap
+        {
+            Ensure = "Present"
+            Key = "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\SNMP\Parameters\TrapConfiguration\nrpublic"
+            ValueName ="1"
+            ValueData = "192.168.241.149"
 
-   Package WebDeploy #WebDeploy installer for IIS cluster webfarm software
-{
-    Name ="Microsoft Web Deploy 2.0"
-    Path = "\\fileserver\msi\WebDeploy_2_10_amd64_en-US.msi"
-    ProductId = "5134B35A-B559-4762-94A4-FD4918977953"
-    Ensure = "Present"
-    Arguments = "Quiet"
+        }
+        
+        Package WebFarm #Web farm installer for IIS cluster webfarm software
+        {
+            Name ="Microsoft Web Farm Framework Version 2.2"
+            Path = "\\fileserver\msi\WebFarm2_x64.msi"
+            ProductId = "5134B35A-B559-4762-94A4-FD4918977953"
+            Ensure = "Present"
+            Arguments = "/qn"
     
-}
+        }
 
-
-Package WebPlatformInstaller #Web Platform Installer for IIS cluster webfarm software
-{
-    Name = "Microsoft Web Platform Installer 3.0"
-    Path = "\\fileserver\msi\WebPlatformInstaller_3_10_amd64_en-US.msi"
-    ProductId = "5134B35A-B559-4762-94A4-FD4918977953"
-    Ensure = "Present"
-    Arguments = "Quiet"   
+        Package WebDeploy #WebDeploy installer for IIS cluster webfarm software
+        {
+            Name ="Microsoft Web Deploy 2.0"
+            Path = "\\fileserver\msi\WebDeploy_2_10_amd64_en-US.msi"
+            ProductId = "5134B35A-B559-4762-94A4-FD4918977953"
+            Ensure = "Present"
+            Arguments = "/qn"
     
-}
+        }
+
+        Package WebPlatformInstaller #Web Platform Installer for IIS cluster webfarm software
+        {
+            Name = "Microsoft Web Platform Installer 3.0"
+            Path = "\\fileserver\msi\WebPlatformInstaller_3_10_amd64_en-US.msi"
+            ProductId = "5134B35A-B559-4762-94A4-FD4918977953"
+            Ensure = "Present"
+            Arguments = "/qn"   
+    
+        }
 
 <#
 GetScript = {
@@ -100,4 +116,4 @@ Add-Content "\\fileserver\configs\State\EnableSharedConfig.state" "@ $d"
 }
 WebServers
 
-Start-DscConfiguration -path .\WebServers -Verbose -Wait
+Start-DscConfiguration -path .\WebServers -Verbose -Wai
