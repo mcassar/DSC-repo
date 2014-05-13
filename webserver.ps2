@@ -65,30 +65,27 @@ node ("web-1.iis.test", "web-2.iis.test", "web-3.iis.test")
         {
             Name ="Microsoft Web Farm Framework Version 2.2"
             Path = "\\fileserver\msi\WebFarm2_x64.msi"
-            ProductId = "5134B35A-B559-4762-94A4-FD4918977953"
-            Ensure = "Present"
+            ProductId = "CC4878C0-4A6A-49CD-AAA7-DD3FCB06CC84"
+            Ensure = "present"
             Arguments = "/qn"
-    
-        }
+            }
 
         Package WebDeploy #WebDeploy installer for IIS cluster webfarm software
         {
-            Name ="Microsoft Web Deploy 2.0"
-            Path = "\\fileserver\msi\WebDeploy_2_10_amd64_en-US.msi"
-            ProductId = "5134B35A-B559-4762-94A4-FD4918977953"
-            Ensure = "Present"
+            Name ="Microsoft Web Deploy 3.5"
+            Path = "\\fileserver\msi\WebDeploy_amd64_en-US.msi"
+            ProductId = "3674F088-9B90-473A-AAC3-20A00D8D810C"
+            Ensure = "present"
             Arguments = "/qn"
-    
-        }
+            }
 
         Package WebPlatformInstaller #Web Platform Installer for IIS cluster webfarm software
         {
             Name = "Microsoft Web Platform Installer 3.0"
             Path = "\\fileserver\msi\WebPlatformInstaller_3_10_amd64_en-US.msi"
-            ProductId = "5134B35A-B559-4762-94A4-FD4918977953"
-            Ensure = "Present"
-            Arguments = "/qn"   
-    
+            ProductId = "CC4878C0-4A6A-49CD-AAA7-DD3FCB06CC84"
+            Ensure = "present"
+            Arguments = "/qn"     
         }
 
         
