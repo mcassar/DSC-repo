@@ -1,6 +1,5 @@
 Configuration WebServers
 {
- 
 
 node ("web-1.iis.test", "web-2.iis.test", "web-3.iis.test")
  
@@ -28,6 +27,7 @@ node ("web-1.iis.test", "web-2.iis.test", "web-3.iis.test")
         {
             Name = "WMSvc"
             StartupType = "Automatic"
+            DependsOn = "[Registry]mgmt-active"
                         
 
         } 
@@ -37,7 +37,9 @@ node ("web-1.iis.test", "web-2.iis.test", "web-3.iis.test")
             Ensure = "Present"
             Key =  "HKLM:\SOFTWARE\Microsoft\WebManagement\Server"
             ValueName = "EnableRemoteManagement"
+            ValueType = "Dword"
             ValueData = "1"
+            
         }
 
        #registry keys for SNMP 
@@ -89,6 +91,7 @@ node ("web-1.iis.test", "web-2.iis.test", "web-3.iis.test")
     
         }
 
+        
 <#
         GetScript = 
         {
@@ -125,4 +128,4 @@ node ("web-1.iis.test", "web-2.iis.test", "web-3.iis.test")
 
 WebServers
 
-Start-DscConfiguration -path .\WebServers -Verbose -Wai
+Start-DscConfiguration -path .\WebServers -Verbose -Wait
