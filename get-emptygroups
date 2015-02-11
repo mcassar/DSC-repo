@@ -1,0 +1,9 @@
+function get-EmptyGroups {
+    $groups = Get-ADGroup -filter * -Properties members
+    foreach ($group in $groups) {
+        $groupmembers = $group |select-object -ExpandProperty members
+       if ($groupmembers -eq $null) {
+            $group.name
+            }
+            }
+            }
