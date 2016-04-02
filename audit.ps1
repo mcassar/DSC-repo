@@ -15,11 +15,13 @@ Searches Active Directory for computers that have not contacted AD for a specifi
 This function is used to help you discover computers that have not been in use for some time, and will allow you to manage your AD better.
 
 
-.Domain
+.PARAMETER Domain
+
 Specify your domain here
 
 
-.Days
+.PARAMETER Days
+
 Used to set the time span from last known login to current date
 
 
