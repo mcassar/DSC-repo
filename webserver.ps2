@@ -54,7 +54,7 @@ node ("web-1.iis.test", "web-2.iis.test", "web-3.iis.test")
         Registry snmp-trap
         {
             Ensure = "Present"
-            Key = "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\SNMP\Parameters\TrapConfiguration\nrpublic"
+            Key = "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\SNMP\Parameters\TrapConfiguration\public"
             ValueName ="1"
             ValueData = "192.168.241.149"
 
