@@ -1,5 +1,4 @@
 Import-Module ActiveDirectory
-
 Function audit-adcomputers ($domain, $days)
 {
 <#
@@ -17,10 +16,9 @@ audit-adcomputers -domain test.net -days 90
 Will require access to Active directory and rights to read and access records within it.
 #>
 $time = (Get-Date).AddDays(-($days))
-Get-ADComputer -Filter {LastLogonTimeStamp -lt $time} -Properties LastLogonTimeStamp | 
-select-object Name,@{Name="Stamp"; Expression={[DateTime]::FromFileTime($_.lastLogonTimestamp)}} 
+Get-ADComputer -Filter {LastLogonTimeStamp -lt $time} -Properties LastLogonTimeStamp, ipv4Address, OperatingSystem | 
+select-object Name,@{Name="Stamp"; Expression={[DateTime]::FromFileTime($_.lastLogonTimestamp)}}, ipv4Address, OperatingSystem
 } 
-
 Function audit-adusers  ($days)
 {
 <#
@@ -33,5 +31,4 @@ Will require access to Active directory and rights to read and access records wi
 #>
 $time = (Get-Date).AddDays(-($days))
 Get-ADUser -Filter {(LastLogonDate -lt $time) -and (Enabled -eq $true)} -Properties LastLogonDate | Sort-Object -Property lastlogondate -Descending |Format-Table -Property name, lastlogondate -AutoSize
-
 }
